@@ -20,9 +20,7 @@ RUN git clone https://github.com/c9/core.git cloud9 && \
 # Clean
 RUN apt-get clean -y && \
     apt-get autoclean -y && \
-    apt-get autoremove -y && \
-    npm cache clean
-
+    apt-get autoremove -y
 
 EXPOSE 8080
 VOLUME ['/cloud9', '/workspace']
