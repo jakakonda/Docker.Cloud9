@@ -1,4 +1,9 @@
 FROM ubuntu:latest
+
+ENV USERNAME=''
+ENV PASSWORD=''
+
+# Prepare env
 RUN apt-get update && apt-get install -y \
   git \
   wget \
@@ -6,15 +11,21 @@ RUN apt-get update && apt-get install -y \
   python \
   nodejs
 
-ENV USERNAME=''
-ENV PASSWORD=''
 
-RUN git clone https://github.com/c9/core.git cloud9
-RUN cloud9/scripts/install-sdk.sh
-RUN mkdir data
+# Install Cloud9
+RUN git clone https://github.com/c9/core.git cloud9 && \
+    cloud9/scripts/install-sdk.sh && \
+    mkdir workspace
+
+# Clean
+RUN apt-get clean -y && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    npm cache clean
+
 
 EXPOSE 8080
+VOLUME ['/cloud9', '/workspace']
 
-VOLUME ['/cloud9', '/data']
 
-ENTRYPOINT exec nodejs /cloud9/server.js -p 8080 -l 0.0.0.0 -a ${USERNAME}:${PASSWORD} -w /data
+ENTRYPOINT exec nodejs /cloud9/server.js -p 8080 -l 0.0.0.0 -a ${USERNAME}:${PASSWORD} -w /workspace
